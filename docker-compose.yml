@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mlops}
+      POSTGRES_USER: ${POSTGRES_USER:-mlops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mlops}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://mlops:mlops@db:5432/mlops
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  worker:
+    build:
+      context: ./backend
+    command: python -m app.worker
+    environment:
+      DATABASE_URL: postgresql+psycopg://mlops:mlops@db:5432/mlops
+    depends_on:
+      - db
+      - backend
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+
+volumes:
+  postgres_data:

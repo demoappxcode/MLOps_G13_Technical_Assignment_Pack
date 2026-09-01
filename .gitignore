@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+.venv313/
+.env
+.pytest_cache/
+.mypy_cache/
+.pyre/
+
+# Node / Angular
+node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Local data
+mlops.db
+*.sqlite3
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/

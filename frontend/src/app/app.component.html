@@ -1,0 +1,98 @@
+<div class="page-shell">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Production operations</p>
+      <h1>{{ title }}</h1>
+    </div>
+    <div class="topbar-badge">Status: healthy</div>
+  </header>
+
+  <div *ngIf="errorMessage" class="error-banner">{{ errorMessage }}</div>
+
+  <main class="dashboard-grid">
+    <section class="panel">
+      <h2>Models</h2>
+      <div class="model-list">
+        <button
+          *ngFor="let model of models"
+          type="button"
+          class="model-card"
+          [class.active]="selectedModel?.id === model.id"
+          (click)="selectModel(model)">
+          <strong>{{ model.name }}</strong>
+          <span>{{ model.framework }} / {{ model.algorithm }}</span>
+          <small>{{ model.lifecycle_stage }}</small>
+        </button>
+      </div>
+
+      <form class="stack-form" (ngSubmit)="createModel()">
+        <h3>Register model</h3>
+        <input [(ngModel)]="modelForm.name" name="name" placeholder="Model name" required />
+        <input [(ngModel)]="modelForm.framework" name="framework" placeholder="Framework" />
+        <input [(ngModel)]="modelForm.algorithm" name="algorithm" placeholder="Algorithm" />
+        <input [(ngModel)]="modelForm.owner" name="owner" placeholder="Owner" />
+        <textarea [(ngModel)]="modelForm.description" name="description" placeholder="Description"></textarea>
+        <button type="submit">Create model</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Version registry</h2>
+      <div *ngIf="selectedModel; else noModel" class="version-list">
+        <div *ngFor="let version of selectedModel.versions || []" class="version-row">
+          <div>
+            <strong>{{ version.version }}</strong>
+            <div class="meta">{{ version.framework }} · {{ version.lifecycle_stage }}</div>
+          </div>
+          <div class="actions">
+            <button type="button" class="secondary" (click)="approveVersion(version)">Approve</button>
+            <button type="button" (click)="deployVersion(version, 'staging')">Staging</button>
+            <button type="button" class="warning" (click)="deployVersion(version, 'production')">Production</button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noModel>
+        <p>No model selected.</p>
+      </ng-template>
+
+      <form class="stack-form" (ngSubmit)="createVersion()">
+        <h3>Add version</h3>
+        <input [(ngModel)]="versionForm.version" name="version" placeholder="Version" />
+        <input [(ngModel)]="versionForm.artifact_uri" name="artifact_uri" placeholder="Artifact URI" />
+        <input [(ngModel)]="versionForm.training_data_ref" name="training_data_ref" placeholder="Training data ref" />
+        <input [(ngModel)]="versionForm.framework" name="framework" placeholder="Framework" />
+        <input [(ngModel)]="versionForm.algorithm" name="algorithm" placeholder="Algorithm" />
+        <textarea [(ngModel)]="versionForm.metadata" name="metadata" placeholder='{"accuracy": 0.93}'></textarea>
+        <button type="submit">Register version</button>
+      </form>
+    </section>
+
+    <section class="panel wide-panel">
+      <h2>Deployment timeline</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Environment</th>
+            <th>Status</th>
+            <th>Requested by</th>
+            <th>Retries</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let deployment of deployments">
+            <td>{{ deployment.environment }}</td>
+            <td>{{ deployment.status }}</td>
+            <td>{{ deployment.requested_by }}</td>
+            <td>{{ deployment.retry_count }}</td>
+            <td>
+              <button type="button" class="secondary" (click)="retryDeployment(deployment.id)">Retry</button>
+              <button type="button" class="warning" (click)="rollbackDeployment(deployment.id)">Rollback</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
