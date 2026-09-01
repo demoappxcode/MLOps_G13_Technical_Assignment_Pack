@@ -6,7 +6,7 @@ Role level:
 G13
 
 GitHub repository:
-https://github.com/<your-org>/<your-repo>
+[https://github.com/<your-org>/<your-repo>](https://github.com/demoappxcode/MLOps_G13_Technical_Assignment_Pack/blob/main/09_submission_email_template.md)
 
 Architecture summary:
 This submission implements a complete MLOps control center with a FastAPI backend, Angular dashboard, SQLAlchemy persistence, deployment lifecycle logic, Docker packaging, and automated validation. The system manages models, versions, approvals, deployment retries, and rollback flows in a simple but realistic operational design.
